@@ -49,12 +49,10 @@
 		</war> 
 	</target>
 	
-	<target name="deploy" description="Deploying war file to Heroku">
+	<target name="deploy" depends="build" description="Deploying war file to Heroku">
 	  <exec executable="/bin/bash" dir=".">
 	    <arg value="command.sh"/>
 	  </exec>
 	</target>
-	
-	
 
 </project>

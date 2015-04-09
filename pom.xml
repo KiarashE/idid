@@ -32,7 +32,7 @@
 			<artifactId>heroku-maven-plugin</artifactId>
             <version>0.3.6</version>
             <configuration>
-            	<appName>protected-caverns-5257</appName>
+            	<appName>idid</appName>
             	<warFile>dist/idid.war</warFile>
             </configuration>
         </plugin>
