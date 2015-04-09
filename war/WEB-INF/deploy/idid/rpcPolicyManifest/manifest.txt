@@ -1,3 +1,0 @@
-# Module idid
-# RPC service class, partial path of RPC policy file
-se.kth.studadm.client.GreetingService, BF7C2E254C301A0099F143D4B1D874C3.gwt.rpc
