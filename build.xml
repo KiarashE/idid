@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="idid" default="info">
+	
+	<property file="build-dev.properties" />
+	<property name="author" value="Kiarash Effatian" />
+	<property name="war.src" value="war" />
+	<property name="war.dest" value="dist" />
+	
+	<path id="war-files">
+		<fileset dir="${war.dir}">
+			<include name="*" />
+		</fileset>
+	</path>
+
+	<target name="info" depends="info1,info2">
+		<echo>Hello World - Welcome to Apache Ant!</echo>
+		<echo>va fan det här var ju kul</echo>
+	</target>
+
+	<target name="info1">
+		<echo>mera info </echo>
+	</target>
+	
+	<target name="info2">
+		<echo>Author of this project is ${author}</echo>
+		<echo>Base dir is ${basedir}</echo>
+		<echo>Locaton of build.xml is ${ant.file}</echo>
+		<echo>Version of this Ant is ${ant.version}</echo>
+		<echo>Version of Java here is ${java.version}</echo>
+		<echo>This ant-project is called ${ant.project.name}</echo>
+		<echo>The core lib of ant is in ${ant.core.lib}</echo>
+		<echo>Ant home is in ${ant.home}</echo>
+		<echo>Ant library dir is ${ant.library.dir}</echo>
+		<echo>This site should be in "${environment}" with url "${sitename}"</echo>
+	</target>
+	
+	<target name="clean" description="Deleting build directory containing war files.">
+		<echo>Deleting build directory.</echo>
+		<delete dir="dist" />
+	</target>
+	
+	<target name="build-dir" depends="clean" description="clean + Creating build directory." >
+		<echo>Creating build directory</echo>
+		<mkdir dir="dist" />
+	</target>
+	
+	<target name="build" depends="build-dir" description="build-dir + Creating war file out of war directory">
+		<war destfile="${war.dest}/idid.war" basedir="${war.src}/" includes="**">
+		</war> 
+	</target>
+	
+	<target name="deploy" description="Deploying war file to Heroku">
+	  <exec executable="/bin/bash" dir=".">
+	    <arg value="command.sh"/>
+	  </exec>
+	</target>
+	
+	
+
+</project>
