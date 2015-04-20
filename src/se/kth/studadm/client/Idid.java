@@ -1,13 +1,23 @@
 package se.kth.studadm.client;
 
+import java.io.Serializable;
+
 import se.kth.studadm.shared.FieldVerifier;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -52,6 +62,7 @@ public class Idid implements EntryPoint {
 		RootPanel.get("nameFieldContainer").add(nameField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
+		
 
 		// Focus the cursor on the name field when the app loads
 		nameField.setFocus(true);
@@ -91,6 +102,7 @@ public class Idid implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
+				testmethod();
 				sendNameToServer();
 			}
 
@@ -149,4 +161,86 @@ public class Idid implements EntryPoint {
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
 	}
+	
+	private void testmethod(){
+		GWT.log("##########kan vi logga här");
+		//new TestServiceImple().jsonTest();
+		String url = "https://edutime.cloudant.com/idid/_design/testview/_view/new-view";
+		url = URL.encode(url);
+		
+		JsonpRequestBuilder req = new JsonpRequestBuilder();
+		req.setTimeout(2000);
+		
+		
+/*		
+		jsonp.requestObject(url, new AsyncCallback<JavaScriptObject>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("misslyckad " + caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(JavaScriptObject result) {
+				JSONObject x = new JSONObject(result);
+				Window.alert("lyckad " + x.get("total_rows"));
+				
+			}
+			
+		});
+*/
+		 
+		req.requestObject(url, new AsyncCallback<Rows>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("misslyckad " + caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Rows result) {
+				
+				
+
+				//GWT.log("##########total rows " + result.getTotalRows());
+				//GWT.log("##########offset " + result.getTotalRows());
+				
+				JSONObject x = new JSONObject(result);
+				GWT.log("##########raw " + x);
+				
+				
+				
+				JsArray<RowsEntry> js = result.getRows();
+				for(int i = 0; i < js.length(); i++){
+
+					GWT.log("##########worked " + js.get(i).getId() + " - " + js.get(i).getKey() + " - " + js.get(i).getValue());				
+					
+				}
+				
+				//JSONObject y = new JSONObject(result.getRows());
+				
+				}
+			
+		});
+		
+	}	
+	
+	class Item{
+		public String id;
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+		
+	}
+	
+	
 }
+
+
+
+

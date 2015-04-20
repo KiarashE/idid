@@ -1,7 +1,12 @@
 package se.kth.studadm.server;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import se.kth.studadm.client.GreetingService;
 import se.kth.studadm.shared.FieldVerifier;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -10,7 +15,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
-
+	
+	public static final String JSON_URL = "https://edutime.cloudant.com/idid/db5fe6280df8879a70f8c205692a5b67";
+	
 	public String greetServer(String input) throws IllegalArgumentException {
 		// Verify that the input is valid. 
 		if (!FieldVerifier.isValidName(input)) {
@@ -21,8 +28,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		}
 
 		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-
+		String userAgent = getThreadLocalRequest().getHeader("User-Agent");	
+		
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		input = escapeHtml(input);
 		userAgent = escapeHtml(userAgent);
