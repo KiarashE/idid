@@ -21,11 +21,15 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -62,6 +66,8 @@ public class Idid implements EntryPoint {
 		RootPanel.get("nameFieldContainer").add(nameField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
+		RootPanel.get("submittest").add(getSubmit());
+		
 		
 
 		// Focus the cursor on the name field when the app loads
@@ -102,7 +108,7 @@ public class Idid implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
-				testmethod();
+				//testmethod();
 				sendNameToServer();
 			}
 
@@ -160,6 +166,36 @@ public class Idid implements EntryPoint {
 		MyHandler handler = new MyHandler();
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
+	}
+	
+	private HorizontalPanel getSubmit(){
+		HorizontalPanel p = new HorizontalPanel();
+		p.setSize("100%", "300px");
+		p.setBorderWidth(1);
+		
+		TextBox t = new TextBox();
+		p.add(t);
+		
+		Button b = new Button();
+		b.setText("Submit");
+		b.setSize("100px", "40px");
+		p.add(b);
+		
+		FormPanel f = new FormPanel();
+		
+		f.addSubmitHandler(new SubmitHandler() {
+			
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				// TODO Auto-generated method stub
+				
+				Window.alert("submited");
+				
+			}
+		});
+		
+		
+		return p;
 	}
 	
 	private void testmethod(){
