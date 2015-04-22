@@ -14,6 +14,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
@@ -35,6 +40,10 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Idid implements EntryPoint {
+	
+	
+	private TextBox t = new TextBox();
+	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -67,8 +76,8 @@ public class Idid implements EntryPoint {
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 		RootPanel.get("submittest").add(getSubmit());
-		
-		
+
+
 
 		// Focus the cursor on the name field when the app loads
 		nameField.setFocus(true);
@@ -108,7 +117,8 @@ public class Idid implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
-				//testmethod();
+				testmethod1();
+				testmethod();
 				sendNameToServer();
 			}
 
@@ -139,26 +149,26 @@ public class Idid implements EntryPoint {
 				serverResponseLabel.setText("");
 				greetingService.greetServer(textToServer,
 						new AsyncCallback<String>() {
-							public void onFailure(Throwable caught) {
-								// Show the RPC error message to the user
-								dialogBox
-										.setText("Remote Procedure Call - Failure");
-								serverResponseLabel
-										.addStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(SERVER_ERROR);
-								dialogBox.center();
-								closeButton.setFocus(true);
-							}
+					public void onFailure(Throwable caught) {
+						// Show the RPC error message to the user
+						dialogBox
+						.setText("Remote Procedure Call - Failure");
+						serverResponseLabel
+						.addStyleName("serverResponseLabelError");
+						serverResponseLabel.setHTML(SERVER_ERROR);
+						dialogBox.center();
+						closeButton.setFocus(true);
+					}
 
-							public void onSuccess(String result) {
-								dialogBox.setText("Remote Procedure Call");
-								serverResponseLabel
-										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(result);
-								dialogBox.center();
-								closeButton.setFocus(true);
-							}
-						});
+					public void onSuccess(String result) {
+						dialogBox.setText("Remote Procedure Call");
+						serverResponseLabel
+						.removeStyleName("serverResponseLabelError");
+						serverResponseLabel.setHTML(result);
+						dialogBox.center();
+						closeButton.setFocus(true);
+					}
+				});
 			}
 		}
 
@@ -167,48 +177,48 @@ public class Idid implements EntryPoint {
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
 	}
-	
+
 	private HorizontalPanel getSubmit(){
 		HorizontalPanel p = new HorizontalPanel();
 		p.setSize("100%", "300px");
 		p.setBorderWidth(1);
+
 		
-		TextBox t = new TextBox();
 		p.add(t);
-		
+
 		Button b = new Button();
 		b.setText("Submit");
 		b.setSize("100px", "40px");
 		p.add(b);
-		
+
 		FormPanel f = new FormPanel();
-		
+
 		f.addSubmitHandler(new SubmitHandler() {
-			
+
 			@Override
 			public void onSubmit(SubmitEvent event) {
 				// TODO Auto-generated method stub
-				
+
 				Window.alert("submited");
-				
+
 			}
 		});
-		
-		
+
+
 		return p;
 	}
-	
+
 	private void testmethod(){
 		GWT.log("##########kan vi logga här");
 		//new TestServiceImple().jsonTest();
-		String url = "https://edutime.cloudant.com/idid/_design/testview/_view/new-view";
+		//String url = "https://edutime.cloudant.com/idid/_design/testview/_view/new-view";
+		String url = "http://127.0.0.1:5984/idid/_design/testview/_view/new-view";
 		url = URL.encode(url);
+
 		
+		/*		
 		JsonpRequestBuilder req = new JsonpRequestBuilder();
-		req.setTimeout(2000);
-		
-		
-/*		
+		req.setTimeout(5000);
 		jsonp.requestObject(url, new AsyncCallback<JavaScriptObject>() {
 
 			@Override
@@ -220,12 +230,13 @@ public class Idid implements EntryPoint {
 			public void onSuccess(JavaScriptObject result) {
 				JSONObject x = new JSONObject(result);
 				Window.alert("lyckad " + x.get("total_rows"));
-				
+
 			}
-			
+
 		});
-*/
-		 
+		 */
+
+		/*
 		req.requestObject(url, new AsyncCallback<Rows>() {
 
 			@Override
@@ -235,46 +246,109 @@ public class Idid implements EntryPoint {
 
 			@Override
 			public void onSuccess(Rows result) {
-				
-				
+
+
 
 				//GWT.log("##########total rows " + result.getTotalRows());
 				//GWT.log("##########offset " + result.getTotalRows());
-				
+
 				JSONObject x = new JSONObject(result);
 				GWT.log("##########raw " + x);
-				
-				
-				
+
+
+
 				JsArray<RowsEntry> js = result.getRows();
 				for(int i = 0; i < js.length(); i++){
 
 					GWT.log("##########worked " + js.get(i).getId() + " - " + js.get(i).getKey() + " - " + js.get(i).getValue());				
+
+				}
+
+				//JSONObject y = new JSONObject(result.getRows());
+
+			}
+
+		});
+*/
+		
+		
+		RequestBuilder req = new RequestBuilder(RequestBuilder.GET, url);
+		req.setTimeoutMillis(5000);
+		req.setHeader("Content-Type","application/json; charset=utf-8");
+		
+		try {
+			req.sendRequest(null, new RequestCallback() {
+				
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					// TODO Auto-generated method stub
+					
+					Rows rows = JsonUtils.safeEval(response.getText());
+					
+					GWT.log("################# " + rows.getRows().get(0).getValue());
 					
 				}
 				
-				//JSONObject y = new JSONObject(result.getRows());
-				
+				@Override
+				public void onError(Request request, Throwable exception) {
+					// TODO Auto-generated method stub
+					Window.alert("misslyckad " + exception.getStackTrace());
 				}
-			
-		});
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
 		
 	}	
-	
-	class Item{
-		public String id;
 
-		public String getId() {
-			return id;
-		}
 
-		public void setId(String id) {
-			this.id = id;
-		}
+	private void testmethod1(){
 		
-	}
+		String url = "http://127.0.0.1:5984/idid/_bulk_docs";
+		url = URL.encode(url);
+		
+		String data = "{\"docs\":[{\"name\":\"" + t.getText() + "\"}]}";
+		data = URL.decodePathSegment(data);
+		GWT.log("data: "  +  data);
+		
+		//curl -d '{"docs":[{"name":"mitt förnamn och efternamn"}]}' -X POST  http://127.0.0.1:5984/idid/_bulk_docs -H "Content-Type:application/json" [{"ok":true,"
+		
+		RequestBuilder req = new RequestBuilder(RequestBuilder.POST, url);
+		req.setTimeoutMillis(5000);
+		req.setHeader("Content-Type","application/json; charset=utf-8");
+		
+		try {
+			req.sendRequest(data, new RequestCallback() {
+				
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					// TODO Auto-generated method stub
+					
+					
+					
+					
+					GWT.log("################# " + response.getText());
+					
+				}
+				
+				@Override
+				public void onError(Request request, Throwable exception) {
+					// TODO Auto-generated method stub
+					Window.alert("misslyckad " + exception.getStackTrace());
+				}
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}	
 	
-	
+
+
+
 }
 
 
