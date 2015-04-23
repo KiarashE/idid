@@ -16,6 +16,16 @@
     <url-pattern>/idid/greet</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>calendarServlet</servlet-name>
+    <servlet-class>se.kth.studadm.server.CalendarServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>calendarServlet</servlet-name>
+    <url-pattern>/idid/calendar</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Idid.html</welcome-file>

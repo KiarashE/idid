@@ -1,13 +1,12 @@
 package se.kth.studadm.client;
 
-import java.io.Serializable;
+import java.util.Date;
 
 import se.kth.studadm.shared.FieldVerifier;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -20,21 +19,24 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.datepicker.client.CalendarModel;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -55,8 +57,9 @@ public class Idid implements EntryPoint {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT
-			.create(GreetingService.class);
+	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	
+	private final CalendarServiceAsync calendarService = GWT.create(CalendarService.class);
 
 	/**
 	 * This is the entry point method.
@@ -64,7 +67,7 @@ public class Idid implements EntryPoint {
 	public void onModuleLoad() {
 		final Button sendButton = new Button("Send");
 		final TextBox nameField = new TextBox();
-		nameField.setText("GWT User");
+		nameField.setText("2015");
 		final Label errorLabel = new Label();
 
 		// We can add style names to widgets
@@ -72,6 +75,7 @@ public class Idid implements EntryPoint {
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
+		RootPanel.get("calendartable").add(getCalendarTable());
 		RootPanel.get("nameFieldContainer").add(nameField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
@@ -143,18 +147,35 @@ public class Idid implements EntryPoint {
 					return;
 				}
 
+				
+				calendarService.calendarServer("2000", new AsyncCallback<String>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						Window.alert("fan det funkar ju inte");
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						// TODO Auto-generated method stub
+						Window.alert("hipppi det funkar " + result);
+						
+					}
+				});
+				
+				
+				
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer,
-						new AsyncCallback<String>() {
+				
+				greetingService.greetServer(textToServer, new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
-						dialogBox
-						.setText("Remote Procedure Call - Failure");
-						serverResponseLabel
-						.addStyleName("serverResponseLabelError");
+						dialogBox.setText("Remote Procedure Call - Failure");
+						serverResponseLabel.addStyleName("serverResponseLabelError");
 						serverResponseLabel.setHTML(SERVER_ERROR);
 						dialogBox.center();
 						closeButton.setFocus(true);
@@ -214,63 +235,6 @@ public class Idid implements EntryPoint {
 		//String url = "https://edutime.cloudant.com/idid/_design/testview/_view/new-view";
 		String url = "http://127.0.0.1:5984/idid/_design/testview/_view/new-view";
 		url = URL.encode(url);
-
-		
-		/*		
-		JsonpRequestBuilder req = new JsonpRequestBuilder();
-		req.setTimeout(5000);
-		jsonp.requestObject(url, new AsyncCallback<JavaScriptObject>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("misslyckad " + caught.getMessage());
-			}
-
-			@Override
-			public void onSuccess(JavaScriptObject result) {
-				JSONObject x = new JSONObject(result);
-				Window.alert("lyckad " + x.get("total_rows"));
-
-			}
-
-		});
-		 */
-
-		/*
-		req.requestObject(url, new AsyncCallback<Rows>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("misslyckad " + caught.getMessage());
-			}
-
-			@Override
-			public void onSuccess(Rows result) {
-
-
-
-				//GWT.log("##########total rows " + result.getTotalRows());
-				//GWT.log("##########offset " + result.getTotalRows());
-
-				JSONObject x = new JSONObject(result);
-				GWT.log("##########raw " + x);
-
-
-
-				JsArray<RowsEntry> js = result.getRows();
-				for(int i = 0; i < js.length(); i++){
-
-					GWT.log("##########worked " + js.get(i).getId() + " - " + js.get(i).getKey() + " - " + js.get(i).getValue());				
-
-				}
-
-				//JSONObject y = new JSONObject(result.getRows());
-
-			}
-
-		});
-*/
-		
 		
 		RequestBuilder req = new RequestBuilder(RequestBuilder.GET, url);
 		req.setTimeoutMillis(5000);
@@ -309,10 +273,38 @@ public class Idid implements EntryPoint {
 		
 		String url = "http://127.0.0.1:5984/idid/_bulk_docs";
 		url = URL.encode(url);
+	
+		DateTimeFormat dt = DateTimeFormat.getFormat("yyyy-MM-dd");
+	
+		Date startdate = dt.parse("2015-01-01");
+		Date enddate = dt.parse("2016-01-01");
 		
-		String data = "{\"docs\":[{\"name\":\"" + t.getText() + "\"}]}";
+		CalendarUtil cal = new CalendarUtil();
+		
+		CalendarUtil startcal = new CalendarUtil();
+		startcal.copyDate(startdate);
+	
+		CalendarUtil endcal = new CalendarUtil();
+		endcal.copyDate(enddate);
+		
+		
+		
+	
+		int yeardays = cal.getDaysBetween(startdate, enddate);
+		for(int i = 0; i < yeardays ; i++){
+			
+			cal.addDaysToDate(startdate, 1);
+		
+			JsDate jsd = JsDate.create(startdate.toGMTString());
+			
+			
+			//GWT.log(i + " - " + startdate.toGMTString() + " / ");
+		}
+	
+		
+		String data = "{\"docs\":[{\"type\":\"cal\",\"name\":\"" + new Date() + "\"}]}";
 		data = URL.decodePathSegment(data);
-		GWT.log("data: "  +  data);
+		//GWT.log("data: "  +  data);
 		
 		//curl -d '{"docs":[{"name":"mitt förnamn och efternamn"}]}' -X POST  http://127.0.0.1:5984/idid/_bulk_docs -H "Content-Type:application/json" [{"ok":true,"
 		
@@ -348,6 +340,32 @@ public class Idid implements EntryPoint {
 	
 
 
+	private FlexTable getCalendarTable(){
+		FlexTable ft = new FlexTable();
+		ft.setBorderWidth(1);
+		
+		Date startdate = new Date();
+		//startdate.setYear(2015);
+		//startdate.setMonth(0);
+		//startdate.setDate(1);
+		
+		Date enddate = new Date();
+		enddate.setYear(2015);
+		enddate.setMonth(11);
+		enddate.setDate(31);
+		
+		CalendarUtil startcal = new CalendarUtil();
+		startcal.copyDate(startdate);
+		
+		CalendarModel cmod = new CalendarModel();
+		
+	
+		
+		
+		
+		ft.setWidget(0, 0, new Label("test"));
+		return ft;
+	}
 
 }
 

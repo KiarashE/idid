@@ -30,13 +30,13 @@ public class FieldVerifier {
 	 * that usernames, passwords, email addresses, URLs, and other fields have the
 	 * proper syntax.
 	 * 
-	 * @param name the name to validate
+	 * @param year the name to validate
 	 * @return true if valid, false if invalid
 	 */
-	public static boolean isValidName(String name) {
-		if (name == null) {
+	public static boolean isValidName(String year) {
+		if (year == null) {
 			return false;
 		}
-		return name.length() > 3;
+		return year.length() == 4 && year.matches("-?\\d+(\\.\\d+)?");
 	}
 }
