@@ -77,18 +77,18 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 
 
 
-	public List<List<String>> getCalenderYearDates(String name) throws IllegalArgumentException { 
+	public List<List<String>> getCalenderYearDates(String year) throws IllegalArgumentException { 
 		// TODO Auto-generated method stub
+
+		String dateFrom = year + "-01-01";
+		String dateTo = year + "-12-31";
 		
 		List<List<String>> dates = new ArrayList<List<String>>();
 		
-		
-		LocalDate lds = LocalDate.parse("2015-01-01");
-		LocalDate lde = LocalDate.parse("2015-12-31");
+		LocalDate lds = LocalDate.parse(dateFrom);
+		LocalDate lde = LocalDate.parse(dateTo);
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_WEEK_DATE;
-
-
 		
 		while(lde.compareTo(lds) >= 0){
 			

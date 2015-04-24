@@ -352,7 +352,7 @@ public class Idid implements EntryPoint {
 		ft.setBorderWidth(1);
 	
 		
-		calendarService.getCalenderYearDates("someting strange is going on", new AsyncCallback<List<List<String>>>() {
+		calendarService.getCalenderYearDates("2014", new AsyncCallback<List<List<String>>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

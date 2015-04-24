@@ -9,6 +9,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("calendar")
 public interface CalendarService extends RemoteService {
+	
 	String calendarServer(String name) throws IllegalArgumentException;
-	List<List<String>> getCalenderYearDates(String name) throws IllegalArgumentException;
+	
+	List<List<String>> getCalenderYearDates(String year) throws IllegalArgumentException;
+	
 }

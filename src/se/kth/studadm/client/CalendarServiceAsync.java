@@ -10,5 +10,5 @@ public interface CalendarServiceAsync {
 	
 	void calendarServer(String input, AsyncCallback<String> callback) throws IllegalArgumentException;
 	
-	void getCalenderYearDates(String input, AsyncCallback<List<List<String>>> callback) throws IllegalArgumentException;
+	void getCalenderYearDates(String year, AsyncCallback<List<List<String>>> callback) throws IllegalArgumentException;
 }
