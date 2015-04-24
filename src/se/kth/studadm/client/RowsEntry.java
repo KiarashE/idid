@@ -1,5 +1,7 @@
 package se.kth.studadm.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
@@ -16,7 +18,7 @@ public class RowsEntry extends JavaScriptObject {
 		return this.key; 
 	}-*/;
 	
-	public final native String getValue() /*-{ 
+	public final native JavaScriptObject getValue() /*-{ 
 	return this.value; 
 }-*/;
 	

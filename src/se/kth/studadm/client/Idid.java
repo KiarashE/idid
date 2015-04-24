@@ -45,10 +45,10 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Idid implements EntryPoint {
-	
-	
+
+
 	private TextBox t = new TextBox();
-	
+
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -61,7 +61,7 @@ public class Idid implements EntryPoint {
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
 	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
-	
+
 	private final CalendarServiceAsync calendarService = GWT.create(CalendarService.class);
 
 	/**
@@ -78,11 +78,12 @@ public class Idid implements EntryPoint {
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("calendartable").add(getCalendarTable());
+		//RootPanel.get("calendartable").add(getCalendarTable());
 		RootPanel.get("nameFieldContainer").add(nameField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 		RootPanel.get("submittest").add(getSubmit());
+		setCalendarView();
 
 
 
@@ -124,8 +125,8 @@ public class Idid implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
-				testmethod1();
-				testmethod();
+				//testmethod1();
+				
 				sendNameToServer();
 			}
 
@@ -150,7 +151,7 @@ public class Idid implements EntryPoint {
 					return;
 				}
 
-				
+
 				calendarService.calendarServer("2000", new AsyncCallback<String>() {
 
 					@Override
@@ -163,20 +164,20 @@ public class Idid implements EntryPoint {
 					public void onSuccess(String result) {
 						// TODO Auto-generated method stub
 						Window.alert("hipppi det funkar " + result);
-						
+
 					}
 				});
-				
-				
 
-				
-				
-				
+
+
+
+
+
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				
+
 				greetingService.greetServer(textToServer, new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
@@ -210,7 +211,7 @@ public class Idid implements EntryPoint {
 		p.setSize("100%", "300px");
 		p.setBorderWidth(1);
 
-		
+
 		p.add(t);
 
 		Button b = new Button();
@@ -235,146 +236,124 @@ public class Idid implements EntryPoint {
 		return p;
 	}
 
-	private void testmethod(){
-		GWT.log("##########kan vi logga här");
-		//new TestServiceImple().jsonTest();
-		//String url = "https://edutime.cloudant.com/idid/_design/testview/_view/new-view";
-		String url = "http://127.0.0.1:5984/idid/_design/testview/_view/new-view";
+	private void setCalendarView(){
+		String url = "http://127.0.0.1:5984/idid/_design/calendar/_view/dates2015";
 		url = URL.encode(url);
-		
+
 		RequestBuilder req = new RequestBuilder(RequestBuilder.GET, url);
 		req.setTimeoutMillis(5000);
 		req.setHeader("Content-Type","application/json; charset=utf-8");
-		
+
 		try {
 			req.sendRequest(null, new RequestCallback() {
-				
+
 				@Override
 				public void onResponseReceived(Request request, Response response) {
-					// TODO Auto-generated method stub
-					
 					Rows rows = JsonUtils.safeEval(response.getText());
-					
-					GWT.log("################# " + rows.getRows().get(0).getValue());
-					
+					populateCalnderView(rows);
 				}
-				
+
 				@Override
 				public void onError(Request request, Throwable exception) {
-					// TODO Auto-generated method stub
 					Window.alert("misslyckad " + exception.getStackTrace());
 				}
 			});
 		} catch (RequestException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	
-		
 	}	
 
+	private void populateCalnderView(Rows rows){
 
-	private void testmethod1(){
-		
-		String url = "http://127.0.0.1:5984/idid/_bulk_docs";
-		url = URL.encode(url);
-	
-		DateTimeFormat dt = DateTimeFormat.getFormat("yyyy-MM-dd");
-	
-		Date startdate = dt.parse("2015-01-01");
-		Date enddate = dt.parse("2016-01-01");
-		
-		CalendarUtil cal = new CalendarUtil();
-		
-		CalendarUtil startcal = new CalendarUtil();
-		startcal.copyDate(startdate);
-	
-		CalendarUtil endcal = new CalendarUtil();
-		endcal.copyDate(enddate);
-		
-		
-		
-	
-		int yeardays = cal.getDaysBetween(startdate, enddate);
-		for(int i = 0; i < yeardays ; i++){
-			
-			cal.addDaysToDate(startdate, 1);
-		
-			JsDate jsd = JsDate.create(startdate.toGMTString());
-			
-			
-			//GWT.log(i + " - " + startdate.toGMTString() + " / ");
-		}
-	
-		
-		String data = "{\"docs\":[{\"type\":\"cal\",\"name\":\"" + new Date() + "\"}]}";
-		data = URL.decodePathSegment(data);
-		//GWT.log("data: "  +  data);
-		
-		//curl -d '{"docs":[{"name":"mitt förnamn och efternamn"}]}' -X POST  http://127.0.0.1:5984/idid/_bulk_docs -H "Content-Type:application/json" [{"ok":true,"
-		
-		RequestBuilder req = new RequestBuilder(RequestBuilder.POST, url);
-		req.setTimeoutMillis(5000);
-		req.setHeader("Content-Type","application/json; charset=utf-8");
-		
-		try {
-			req.sendRequest(data, new RequestCallback() {
-				
-				@Override
-				public void onResponseReceived(Request request, Response response) {
-					// TODO Auto-generated method stub
-					
-					
-					
-					
-					GWT.log("################# " + response.getText());
-					
-				}
-				
-				@Override
-				public void onError(Request request, Throwable exception) {
-					// TODO Auto-generated method stub
-					Window.alert("misslyckad " + exception.getStackTrace());
-				}
-			});
-		} catch (RequestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}	
-	
-
-
-	private FlexTable getCalendarTable(){
-	
 		final FlexTable ft = new FlexTable();
 		ft.setBorderWidth(1);
-	
+
+		for(int i = 0; i < rows.getRows().length(); i++){
+			String date = rows.getRows().get(i).getValue().toString();
+			//String week = rows.getRows().get(i).getValue().toString();
+			ft.setWidget(i, 0, new Label(date));
+			//ft.setWidget(i, 1, new Label(week));
+		}
+		RootPanel.get("calendartable").add(ft);
 		
-		calendarService.getCalenderYearDates("2014", new AsyncCallback<List<List<String>>>() {
+	}
+
+
+
+
+
+
+
+	private void setCalendarListYear(){
+
+
+		calendarService.getCalenderYearDates("2020", new AsyncCallback<List<List<String>>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
 				Window.alert("Something strange funkar inte");
+
 			}
 
 			@Override
 			public void onSuccess(List<List<String>> result) {
 				// TODO Auto-generated method stub
-				
-				for(int i = 0; i < result.size(); i++){
-					ft.setWidget(i, 0, new Label(result.get(i).get(0)));
-					ft.setWidget(i, 1, new Label(result.get(i).get(1)));
-				}
-				
+				testmethod1(result);
+
 			}
 		});
-		
-	
-		return ft;
+
 	}
+
+
+
+	private void testmethod1(List<List<String>> result){
+		GWT.log("va faaan");
+		String data = "";
+		String url = "http://127.0.0.1:5984/idid/_bulk_docs";
+		url = URL.encode(url);
+
+		data = "{\"docs\":[";
+		for(int i = 0; i < result.size(); i++){
+			data = data + "{\"type\":\"calendar\",\"year\":\"" + "2020" + "\",\"date\":\"" + result.get(i).get(0) + "\",\"week\":\"" + result.get(i).get(1) + "\"}";
+
+			if(i < result.size()-1)
+				data = data + ",";
+		}
+		data = data + "]}";
+
+		data = URL.decodePathSegment(data);
+		//GWT.log("data: "  +  data);
+
+		//curl -d '{"docs":[{"name":"mitt förnamn och efternamn"}]}' -X POST  http://127.0.0.1:5984/idid/_bulk_docs -H "Content-Type:application/json" [{"ok":true,"
+
+
+		RequestBuilder req = new RequestBuilder(RequestBuilder.POST, url);
+		req.setTimeoutMillis(5000);
+		req.setHeader("Content-Type","application/json; charset=utf-8");
+
+		try {
+			req.sendRequest(data, new RequestCallback() {
+
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					// TODO Auto-generated method stub
+					GWT.log("################# " + response.getText());
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					// TODO Auto-generated method stub
+					Window.alert("misslyckad " + exception.getStackTrace());
+				}
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+
 
 }
 
