@@ -1,7 +1,9 @@
 package se.kth.studadm.client;
 
 import java.util.Date;
+import java.util.List;
 
+import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -20,6 +22,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -163,6 +166,9 @@ public class Idid implements EntryPoint {
 						
 					}
 				});
+				
+				
+
 				
 				
 				
@@ -341,29 +347,32 @@ public class Idid implements EntryPoint {
 
 
 	private FlexTable getCalendarTable(){
-		FlexTable ft = new FlexTable();
+	
+		final FlexTable ft = new FlexTable();
 		ft.setBorderWidth(1);
-		
-		Date startdate = new Date();
-		//startdate.setYear(2015);
-		//startdate.setMonth(0);
-		//startdate.setDate(1);
-		
-		Date enddate = new Date();
-		enddate.setYear(2015);
-		enddate.setMonth(11);
-		enddate.setDate(31);
-		
-		CalendarUtil startcal = new CalendarUtil();
-		startcal.copyDate(startdate);
-		
-		CalendarModel cmod = new CalendarModel();
-		
 	
 		
+		calendarService.getCalenderYearDates("someting strange is going on", new AsyncCallback<List<List<String>>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				Window.alert("Something strange funkar inte");
+			}
+
+			@Override
+			public void onSuccess(List<List<String>> result) {
+				// TODO Auto-generated method stub
+				
+				for(int i = 0; i < result.size(); i++){
+					ft.setWidget(i, 0, new Label(result.get(i).get(0)));
+					ft.setWidget(i, 1, new Label(result.get(i).get(1)));
+				}
+				
+			}
+		});
 		
-		
-		ft.setWidget(0, 0, new Label("test"));
+	
 		return ft;
 	}
 

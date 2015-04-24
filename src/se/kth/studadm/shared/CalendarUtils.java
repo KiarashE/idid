@@ -1,4 +1,4 @@
-package se.kth.studadm.server;
+package se.kth.studadm.shared;
 
 public class CalendarUtils {
 	

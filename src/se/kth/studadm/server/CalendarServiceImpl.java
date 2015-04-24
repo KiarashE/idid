@@ -1,12 +1,19 @@
 package se.kth.studadm.server;
 
+
 import se.kth.studadm.client.CalendarService;
+import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 
+import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.gwt.user.server.rpc.core.java.util.Arrays;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The server-side implementation of the RPC service.
@@ -19,8 +26,7 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 		if (!FieldVerifier.isValidName(input)) {
 			// If the input is not valid, throw an IllegalArgumentException back to
 			// the client.
-			throw new IllegalArgumentException(
-					"Choose a year as 2015");
+			throw new IllegalArgumentException("Choose a year as 2015");
 		}
 
 		String serverInfo = getServletContext().getServerInfo();
@@ -32,6 +38,8 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 
 		return input;
 	}
+	
+	
 
 	/**
 	 * Escape an html string. Escaping data received from the client helps to
@@ -65,6 +73,35 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 		}
 		
 		return calData;
+	}
+
+
+
+	public List<List<String>> getCalenderYearDates(String name) throws IllegalArgumentException { 
+		// TODO Auto-generated method stub
+		
+		List<List<String>> dates = new ArrayList<List<String>>();
+		
+		
+		LocalDate lds = LocalDate.parse("2015-01-01");
+		LocalDate lde = LocalDate.parse("2015-12-31");
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_WEEK_DATE;
+
+
+		
+		while(lde.compareTo(lds) >= 0){
+			
+			List<String> items = new ArrayList<String>();
+			items.add(lds.toString());
+			items.add(formatter.format(lds));
+			
+			dates.add(items);
+			
+			lds = lds.plusDays(1);
+		}
+		
+		return dates;
 	}
 
 }

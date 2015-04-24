@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import se.kth.studadm.client.GreetingService;
+import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -24,7 +25,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Choose a year as 2015");
 		}
-
+ 
 		String serverInfo = getServletContext().getServerInfo();
 		String userAgent = getThreadLocalRequest().getHeader("User-Agent");	
 		
