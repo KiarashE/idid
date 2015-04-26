@@ -26,6 +26,13 @@ public class RowsEntry extends JavaScriptObject {
 	}-*/;
 	
 
+	public final native String getWeekNr() /*-{ 
+		return this.value.week.substring(6, 8); 
+	}-*/;
+	
+	public final native String getDayNrOfWeek() /*-{ 
+		return this.value.week.substring(9);
+	}-*/;
 	
 /*	public final native JsArray getRows()-{ 
     	return this.rows; 

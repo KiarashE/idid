@@ -17,8 +17,7 @@ public class CalendarUtils {
 	public String date;
 	public String weekdate;
 	
-	public String getDayOfWeek(String weekcode){
-		String dayNr = weekcode.substring(9); 
+	public String getDayOfWeek(String dayNr){
 		String day = null;
 		if(dayNr.equalsIgnoreCase("1"))
 			day = "Måndag";
@@ -37,5 +36,6 @@ public class CalendarUtils {
 			
 		return day;
 	}
+	
 
 }

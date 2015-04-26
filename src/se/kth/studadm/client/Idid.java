@@ -1,15 +1,23 @@
 package se.kth.studadm.client;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import se.kth.studadm.client.resources.MyCssResource;
 import se.kth.studadm.client.resources.MyResources;
 import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
+import se.kth.studadm.shared.WeeksData;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.JsonUtils;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -21,20 +29,28 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ValueBoxBase.TextAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.gwt.core.client.JsDate;
+import com.google.gwt.dom.client.Document;
 
 
 /**
@@ -173,11 +189,6 @@ public class Idid implements EntryPoint {
 					}
 				});
 
-
-
-
-
-
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
@@ -269,22 +280,206 @@ public class Idid implements EntryPoint {
 	}	
 
 	private void populateCalnderView(Rows rows){
-
-		final FlexTable ft = new FlexTable();
-		ft.setBorderWidth(1);
-		ft.setStylePrimaryName(css.getCaltable());
-		ft.setCellPadding(2);
-
-		CalendarUtils cal = new CalendarUtils();
-		for(int i = 0; i < rows.getRows().length(); i++){
-			String date = rows.getRows().get(i).getDate();
-			String week = rows.getRows().get(i).getWeek();
-			ft.setWidget(i, 0, new Label(date));
-			ft.setWidget(i, 1, new Label(cal.getDayOfWeek(week)));
-			ft.setWidget(i, 2, new Label(week));
-		}
-		RootPanel.get("calendartable").add(ft);
+		VerticalPanel vpanel = new VerticalPanel();
 		
+		ArrayList<WeeksData> weekPack = getWeekNumbers(rows);
+		
+		for(int i = 0; i < weekPack.size(); i++){
+			String weekCaption = "Vecka " + weekPack.get(i).getWeekNr();
+			
+			CaptionPanel caption = new CaptionPanel();
+			caption.setCaptionText(weekCaption);
+			vpanel.add(caption);	
+			
+			ArrayList<String> weekData = weekPack.get(i).getWeekData();
+			FlexTable ft = new FlexTable();
+			ft.setBorderWidth(1);
+			ft.setStylePrimaryName(css.getCaltable());
+			ft.setCellPadding(5);
+			
+			for(int j = 0; j < weekData.size(); j++){
+				TextBox timeBoxFrom = getTimeBox("from-"+weekData.get(j));
+				timeBoxFrom.setStylePrimaryName(css.getTimebox());
+				TextBox timeBoxTo =getTimeBox("to-"+weekData.get(j));
+				timeBoxTo.setStylePrimaryName(css.getTimebox());
+				
+				DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+				Date date = new Date();
+				date = dateFormat.parse(weekData.get(j));
+				
+				Label dateFrom = new Label(weekData.get(j));
+				dateFrom.setStylePrimaryName(css.getTimebox());
+				
+				
+				ft.setWidget(j, 0, getLabel("Från"));
+				ft.setWidget(j, 1, dateFrom);
+				ft.setWidget(j, 2, timeBoxFrom);
+				ft.setWidget(j, 3, getLabel("Till"));
+				ft.setWidget(j, 4, getDatePicker(date));
+				ft.setWidget(j, 5, timeBoxTo);
+				ft.setWidget(j, 6, getLunchBox());
+				ft.setWidget(j, 7, getTotDayhours(timeBoxFrom, timeBoxTo));
+			}
+			caption.add(ft);
+			
+		}
+		RootPanel.get("calendartable").add(vpanel);
+	}
+	
+	public Label getLabel(String str){
+		Label label = new Label(str);
+		label.setStylePrimaryName(css.getTimebox());
+		return label;
+	}
+	
+	public DateBox getDatePicker(Date date){
+		DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+		DateBox dateBox = new DateBox();
+		dateBox.setStylePrimaryName(css.getDatepicker());
+		dateBox.setValue(date);
+		dateBox.setFormat(new DateBox.DefaultFormat(dateFormat));
+	    dateBox.getDatePicker().setYearArrowsVisible(true);
+		return dateBox;
+	}
+	
+	public TextBox getTotDayhours(TextBox boxFrom, TextBox boxTo){
+		final TextBox textBoxFrom = boxFrom;
+		final TextBox textBoxTo = boxTo;
+		
+		JsDate from = JsDate.create();
+		from.setHours(10);
+		from.setMinutes(0);
+		
+		JsDate to = JsDate.create();
+		to.setHours(11);
+		to.setMinutes(0);
+		
+		double tot = to.getTime() - from.getTime();
+		
+		DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss");
+		Date ftime = new Date();
+		ftime = dateFormat.parse("2015-04-27 10:40:00");
+	
+		Date ttime = new Date();
+		ttime = dateFormat.parse("2015-04-27 10:50:00");
+		
+		
+		long x = (ttime.getTime() - ftime.getTime());
+		
+		Date difftime =  new Date();
+		difftime.setTime(x);
+		
+		final JsDate diff = JsDate.create(tot);
+		GWT.log(difftime.toString());
+		
+		
+		final TextBox totDayHours = new TextBox();
+		totDayHours.setStylePrimaryName(css.getDayhours());
+		totDayHours.setMaxLength(5);
+		totDayHours.setSize("40px", "14px");
+		totDayHours.setAlignment(TextAlignment.CENTER);
+		
+		textBoxFrom.addBlurHandler(new BlurHandler() {
+			@Override
+			public void onBlur(BlurEvent event) {
+				if(!textBoxFrom.getText().isEmpty() && !textBoxFrom.getText().isEmpty()){
+					totDayHours.setText(diff.toTimeString());
+				} else {
+					totDayHours.setText("");
+				}
+			}
+		});
+
+		textBoxTo.addBlurHandler(new BlurHandler() {
+			@Override
+			public void onBlur(BlurEvent event) {
+				if(!textBoxFrom.getText().isEmpty() && !textBoxFrom.getText().isEmpty()){
+					totDayHours.setText(diff.toTimeString());
+				} else {
+					totDayHours.setText("");
+				}
+			}
+		});
+		
+		
+
+		return totDayHours;
+	}
+	
+	
+	
+	public TextBox getLunchBox(){
+		final TextBox lunchbox = new TextBox();
+		lunchbox.setStylePrimaryName(css.getLunchbox());
+		lunchbox.setMaxLength(5);
+		lunchbox.setSize("40px", "14px");
+		lunchbox.setAlignment(TextAlignment.CENTER);
+		lunchbox.setText("00:30");
+		return lunchbox;
+	}
+	
+	public TextBox getTimeBox(String boxname){
+		final TextBox timebox = new TextBox();
+		timebox.setStylePrimaryName(css.getTimebox());
+		timebox.setMaxLength(5);
+		timebox.setSize("40px", "14px");
+		timebox.setAlignment(TextAlignment.CENTER);
+		timebox.setName(boxname);
+		
+		timebox.addBlurHandler(new BlurHandler() {
+			
+			@Override
+			public void onBlur(BlurEvent event) {
+				String formatted = "";
+				String timeStr = timebox.getText();
+				int timeStrSize = timeStr.length();
+				
+				boolean hasSepChar = true;
+				if(timeStr.indexOf(':') < 0){
+					hasSepChar = false;
+				}
+				
+				if(hasSepChar == false && timeStrSize == 1){
+					formatted = "0" + timeStr + ":00";
+				} else if(hasSepChar == false && timeStrSize == 2) {
+					formatted = timeStr + ":00";
+				} else if(hasSepChar == false && timeStrSize == 3) {
+					formatted = "0" + timeStr.substring(0,1) + ":" + timeStr.substring(1, 3);
+				} else if(hasSepChar == false && timeStrSize == 4) {
+					formatted = timeStr.substring(0, 2) + ":" + timeStr.substring(2, 5);
+				} else if(hasSepChar == true && timeStrSize == 3 && timeStr.charAt(1) == ':') {
+					formatted = "0" + timeStr.substring(0, 2) + "0" + timeStr.substring(2) ;
+				} else if(hasSepChar == true && timeStrSize == 4 && timeStr.charAt(1) == ':') {
+					formatted = "0" + timeStr.substring(0, 2) + timeStr.substring(2) ;
+				} else if(hasSepChar == true && timeStrSize == 4 && timeStr.charAt(2) == ':') {
+					formatted = timeStr.substring(0, 2) + ":" + "0" + timeStr.substring(3) ;
+				} else if(hasSepChar == true && timeStrSize == 5 && timeStr.charAt(2) == ':') {
+					formatted = timeStr;
+				}
+				timebox.setText(formatted);
+			}
+		});
+		return timebox;
+	}
+	
+	public ArrayList<WeeksData> getWeekNumbers(Rows rows){
+		ArrayList<WeeksData> weeksDataList = new ArrayList<WeeksData>();
+		WeeksData weeksData = null;
+		String weekNrTemp = "0";
+		
+		for(int i = 0; i < rows.getRows().length(); i++){
+			String weekNr = rows.getRows().get(i).getWeekNr();
+			String date = rows.getRows().get(i).getDate();
+			
+			if(!weekNrTemp.equalsIgnoreCase(weekNr)){
+				weeksData = new WeeksData();
+				weeksDataList.add(weeksData);
+				weeksData.setWeekNr(weekNr);
+				weekNrTemp = weekNr;
+			}
+			weeksData.getWeekData().add(date);
+		}
+		return weeksDataList;
 	}
 
 

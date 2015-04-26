@@ -2,12 +2,16 @@
 
 body{
 	color: #505050;
-	font-size: 8px !important;
-	font-family: 'News Cycle', sans-serif;
+	font-size: 6px;
+	font-family: "News Cycle"", sans-serif;
 }
 
 .caltable{
-	color: blue !important;
 	border-collapse: collapse;
-	border: solid blue 1px;
+	border: solid #505050 1px;
+	font-size: 10px;
+}
+
+.timebox, .lunchbox, .totdayhours, .datepicker{
+	font-size: 10px;
 }

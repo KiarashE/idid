@@ -7,6 +7,7 @@ public interface MyResources extends ClientBundle {
 	
 	public static final MyResources INSTANCE = GWT.create(MyResources.class);
 
+	
 	  @Source("ididstyle.css")
 	  public MyCssResource css();
 
