@@ -1,14 +1,14 @@
 package se.kth.studadm.client;
 
-import java.util.Date;
 import java.util.List;
 
+import se.kth.studadm.client.resources.MyCssResource;
+import se.kth.studadm.client.resources.MyResources;
 import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -21,8 +21,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -37,8 +35,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.datepicker.client.CalendarModel;
-import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 
 /**
@@ -48,6 +44,8 @@ public class Idid implements EntryPoint {
 
 
 	private TextBox t = new TextBox();
+	public static MyResources resources;
+	public static MyCssResource css;
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -63,11 +61,18 @@ public class Idid implements EntryPoint {
 	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 
 	private final CalendarServiceAsync calendarService = GWT.create(CalendarService.class);
+	
+	
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
+		resources = MyResources.INSTANCE;
+        resources.css().ensureInjected();
+        css = resources.css();
+		
 		final Button sendButton = new Button("Send");
 		final TextBox nameField = new TextBox();
 		nameField.setText("2015");
@@ -267,12 +272,16 @@ public class Idid implements EntryPoint {
 
 		final FlexTable ft = new FlexTable();
 		ft.setBorderWidth(1);
+		ft.setStylePrimaryName(css.getCaltable());
+		ft.setCellPadding(2);
 
+		CalendarUtils cal = new CalendarUtils();
 		for(int i = 0; i < rows.getRows().length(); i++){
-			String date = rows.getRows().get(i).getValue().toString();
-			//String week = rows.getRows().get(i).getValue().toString();
+			String date = rows.getRows().get(i).getDate();
+			String week = rows.getRows().get(i).getWeek();
 			ft.setWidget(i, 0, new Label(date));
-			//ft.setWidget(i, 1, new Label(week));
+			ft.setWidget(i, 1, new Label(cal.getDayOfWeek(week)));
+			ft.setWidget(i, 2, new Label(week));
 		}
 		RootPanel.get("calendartable").add(ft);
 		

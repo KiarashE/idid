@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsonUtils;
 
 public class RowsEntry extends JavaScriptObject {
 	
@@ -18,9 +17,13 @@ public class RowsEntry extends JavaScriptObject {
 		return this.key; 
 	}-*/;
 	
-	public final native JavaScriptObject getValue() /*-{ 
-	return this.value; 
-}-*/;
+	public final native String getDate() /*-{ 
+		return this.value.date; 
+	}-*/;
+	
+	public final native String getWeek() /*-{ 
+		return this.value.week; 
+	}-*/;
 	
 
 	

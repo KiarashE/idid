@@ -2,7 +2,6 @@ package se.kth.studadm.server;
 
 
 import se.kth.studadm.client.CalendarService;
-import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 
 import com.google.gwt.cell.client.TextCell;
@@ -22,7 +21,7 @@ import java.util.List;
 public class CalendarServiceImpl extends RemoteServiceServlet implements CalendarService {
 	
 	public String calendarServer(String input) throws IllegalArgumentException {
-		// Verify that the input is valid. 
+		// Verify that the input is valid.  
 		if (!FieldVerifier.isValidName(input)) {
 			// If the input is not valid, throw an IllegalArgumentException back to
 			// the client.
@@ -49,7 +48,7 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 	 * @return the escaped string
 	 */
 	private String escapeHtml(String html) {
-		getDates();
+		
 		if (html == null) {
 			return null;
 		}
@@ -57,23 +56,7 @@ public class CalendarServiceImpl extends RemoteServiceServlet implements Calenda
 				.replaceAll(">", "&gt;");
 	}
 	
-	private ArrayList<CalendarUtils> getDates(){
-		LocalDate lds = LocalDate.parse("2015-01-01");
-		LocalDate lde = LocalDate.parse("2015-12-31");
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ISO_WEEK_DATE;
 
-		CalendarUtils calendarYear = new CalendarUtils();
-		ArrayList<CalendarUtils> calData = new ArrayList<CalendarUtils>();
-		
-		while(lde.compareTo(lds) >= 0){
-			calendarYear.setDate(lds.toString());
-			calendarYear.setWeekdate(formatter.format(lds));
-			lds = lds.plusDays(1);
-		}
-		
-		return calData;
-	}
 
 
 

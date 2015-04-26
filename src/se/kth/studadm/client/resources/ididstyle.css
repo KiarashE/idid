@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+body{
+	color: #505050;
+	font-size: 8px !important;
+	font-family: 'News Cycle', sans-serif;
+}
+
+.caltable{
+	color: blue !important;
+	border-collapse: collapse;
+	border: solid blue 1px;
+}
