@@ -6,7 +6,6 @@ import java.util.List;
 
 import se.kth.studadm.client.resources.MyCssResource;
 import se.kth.studadm.client.resources.MyResources;
-import se.kth.studadm.shared.CalendarUtils;
 import se.kth.studadm.shared.FieldVerifier;
 import se.kth.studadm.shared.WeeksData;
 
@@ -16,8 +15,6 @@ import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -39,7 +36,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -48,9 +44,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ValueBoxBase.TextAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
-import com.google.gwt.user.datepicker.client.DatePicker;
-import com.google.gwt.core.client.JsDate;
-import com.google.gwt.dom.client.Document;
 
 
 /**
